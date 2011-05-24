@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <!--
-	hastily written by Dave Rice, AudioVisual Preservation Solutions
+	written by Dave Rice, AudioVisual Preservation Solutions for Dance Heritage Coalition's Secure Media Network managed by Bay Area Video Coalition
 	2011-02-11
 	updated 2011-05-24
 	converts valid PBCore 1.3 records into PBCore 2.0
 	may not work properly for PBCore versions prior to 1.3
 	issues are commented below
 -->
-<!-- According to pbcore.org, source and version refer to data value, not another attribute.  
+<!--     comments on mapping: According to pbcore.org, source and version refer to data value, not another attribute.  
 	 Therefore, lossy/inaccurate mapping (@source may refer to another attribute rather than element value from 1.3 to 2.0 for the following elements: 
 	 pbcoreTitle (titleType now an attribute).
 	 pbcoreSubject (subjectAuthorityUsed now = @source) 
