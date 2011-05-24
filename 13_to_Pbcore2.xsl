@@ -7,13 +7,12 @@
 	may not work properly for PBCore versions prior to 1.3
 	issues are commented below
 -->
-<!--     comments on mapping: According to pbcore.org, source and version refer to data value, not another attribute.  
-	 Therefore, lossy/inaccurate mapping (@source may refer to another attribute rather than element value from 1.3 to 2.0 for the following elements: 
-	 pbcoreTitle (titleType now an attribute).
-	 pbcoreSubject (subjectAuthorityUsed now = @source) 
-	 pbcoreDescription (descriptionType now an attribute)
-	 pbcoreGenre (genreAuthorityUsed now = @source)
-	
+<!--     Comments on mapping: According to pbcore.org, in PBCore 2.0, @source and @version attributes refer to data value, not another attribute.  In PBCore 1.3, many @source and @version attributes were used to qualify elements which are now attributes in 2.0.
+	 Therefore, it is impossible to create a semantically lossless mapping from v1.3. to 2.0 for the following elements: 
+	 TitleType: reason = titleType now an attribute in 2.0. Previous @source and @version attributes associated with the 1.3 element TitleType are mapped to pbcoreTitle/@source and @version, which should be used to refer to the data contained in pbcoreTitle, not another attribute.
+	 pbcoreSubjectAuthorityUsed: reason = subjectAuthorityUsed now = @source.  Previous @source attribute of this element is lost.
+	 pbcoreDescription: reason = descriptionType is now an attribute in 2.0 Previous @source and @version attributes associated with the 1.3 element DescriptionType are mapped to pbcoreDescription/@source and @version, which should be used to refer to the data contained in pbcoreTitle, not another attribute.
+	 pbcoreGenre: reason = genreAuthorityUsed now = @source.  Previous @source attribute of this element is lost.
 	-->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xsi:schemaLocation="http://www.pbcore.org/PBCore/PBCoreNamespace.html http://www.pbcore.org/PBCore/PBCoreXSD_Ver_1-2-1.xsd" xmlns:p13="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.pbcore.org/PBCore/PBCoreNamespace.html">
 	<xsl:output encoding="UTF-8" method="xml" version="1.0" indent="yes"/>
@@ -25,8 +24,22 @@
 			<xsl:apply-templates select="p13:pbcoreExtension"/>
 		</pbcoreDescriptionDocument>
 	</xsl:template>
+	<xsl:template match="p13:pbcoreAssetType">
+		<pbcoreAssetType>
+			<xsl:if test="string(p13:pbcoreAssetType/@source)"> 
+				<xsl:attribute name="source">
+					<xsl:value-of select="p13:pbcoreAssetType/@source"/>
+				</xsl:attribute>
+			</xsl:if>
+			<xsl:if test="string(p13:pbcoreAssetType/@version)">
+				<xsl:attribute name="version">
+					<xsl:value-of select="pbcoreAssetType/@version"/>
+				</xsl:attribute>
+			</xsl:if>
+			<xsl:value-of select="p13:pbcoreAssetType"/>
+		</pbcoreAssetType>
+	</xsl:template>
 	<xsl:template match="p13:pbcoreIdentifier">
-		<!-- KVM: pbcoreAssetType? -->
 		<pbcoreIdentifier>
 			<xsl:attribute name="source">
 				<xsl:value-of select="p13:identifierSource"/>
@@ -633,6 +646,10 @@
 		<xsl:if test="string(p13:extension)">
 			<pbcoreExtension>
 				<extensionWrap>
+                                     <xsl:if test="string(p13:extensionAuthorityUsed/@source)">
+						<xsl:attribute name="annotation">pbcore13:source=</xsl:attribute>
+						<xsl:value-of select="p13:extensionAuthorityUsed/@source"/>
+					</xsl:if>
 					<extensionElement>
 						<xsl:text>um</xsl:text><!-- parse out of extension -->
 					</extensionElement>
@@ -641,8 +658,7 @@
 						<xsl:value-of select="p13:extension"/>
 					</extensionValue>
 					<extensionAuthorityUsed>
-						<xsl:value-of select="p13:extensionAuthorityUsed"/><!-- add source, version -->
-						<!-- KVM: source and version map to extensionWrap @annotation. -->
+						<xsl:value-of select="p13:extensionAuthorityUsed"/>
 					</extensionAuthorityUsed>
 				</extensionWrap>
 			</pbcoreExtension>
